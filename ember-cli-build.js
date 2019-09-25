@@ -1,24 +1,30 @@
 'use strict';
 
 const EmberApp = require('ember-cli/lib/broccoli/ember-app');
+const fs = require('fs');
+
+const CURRENT_PLATFORM = process.env.CURRENT_PLATFORM || 'walmart';
+
+const importModule = (app, features, base) => {
+  app.import(`vendor/components/${base}/index.js`);
+  features.forEach(feature => {
+    app.import(`vendor/components/${base}/${feature}.js`);
+  });
+}
+const importFolder = (app, path) => fs
+  .readdirSync(path)
+  .forEach(file => app.import(`${path}/${file}`));
 
 module.exports = function(defaults) {
-  let app = new EmberApp(defaults, {
-    // Add options here
-  });
+  let app = new EmberApp(defaults, {});
 
-  // Use `app.import` to add additional libraries to the generated
-  // output files.
-  //
-  // If you need to use different assets in different
-  // environments, specify an object as the first parameter. That
-  // object's keys should be the environment name and the values
-  // should be the asset to use in that environment.
-  //
-  // If the library that you are including contains AMD or ES6
-  // modules that you would like to import into your application
-  // please specify an object with the list of modules as keys
-  // along with the exports of each module as its value.
+  const { contributions } = require(`./config/${CURRENT_PLATFORM}/table-attrs.json`);
+  
+  app.import('vendor/index.js');
+  app.import('vendor/common.js');
+  
+  importFolder(app, 'vendor/common');
+  importModule(app, contributions, 'contributions');
 
   return app.toTree();
 };
