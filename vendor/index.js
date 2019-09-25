@@ -1,14 +1,14 @@
 
 const _initStore = () => {
-  const _settings_store_ = {};
+  const store = {};
 
   return (base, common = []) => {
-    _settings_store_[base] = common;
+    store[base] = common;
 
-    define(`settings/${base}`, [], () => _settings_store_[base]);
+    define(`settings/${base}`, [], () => store[base]);
 
     return (value) => {
-      _settings_store_[base].push(value);
+      store[base].push(value);
     }
   }
 }
